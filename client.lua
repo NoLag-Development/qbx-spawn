@@ -1,4 +1,4 @@
-local QBCore = exports['qbx-core']:GetCoreObject()
+local QBCore = exports['qb-core']:GetCoreObject()
 local camZPlus1 = 1500
 local camZPlus2 = 50
 local pointCamCoords = 75
@@ -58,7 +58,6 @@ end)
 RegisterNetEvent('qb-spawn:client:setupSpawns', function(cData, new, apps)
     if not new then
         local houses = lib.callback.await('qb-spawn:server:getOwnedHouses', false, cData.citizenid)
-        local myHouses = {}
         if houses then
             for i = 1, #houses do
                 myHouses[#myHouses+1] = {

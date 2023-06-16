@@ -7,7 +7,7 @@ version '1.0.0'
 shared_scripts {
 	'config.lua',
 	'@ox_lib/init.lua',
-	'@qbx-apartments/config.lua'
+	'@qb-apartments/config.lua'
 }
 
 client_script 'client.lua'

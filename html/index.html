@@ -65,7 +65,7 @@
 
                 methods: {
                     click_location: async function(type, name) {
-                        if (type == "normal") { 
+                        if (type == "normal" || type == "house") { 
                             await fetch(`https://${GetParentResourceName()}/setCam`, {
                                 method: 'POST',
                                 body: JSON.stringify({
