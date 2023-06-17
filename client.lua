@@ -58,6 +58,7 @@ end)
 RegisterNetEvent('qb-spawn:client:setupSpawns', function(cData, new, apps)
     if not new then
         local houses = lib.callback.await('qb-spawn:server:getOwnedHouses', false, cData.citizenid)
+        local myHouses = {}
         if houses then
             for i = 1, #houses do
                 myHouses[#myHouses+1] = {
