@@ -58,7 +58,7 @@ RegisterNetEvent('qb-spawn:client:setupSpawns', function(cData, new, apps)
         if houses then
             for i = 1, #houses do
                 local coords = json.decode(houses[i].camCoords)
-                Houses[houses[i].id] = {
+                Houses[tostring(houses[i].id)] = {
                     house = houses[i].id,
                     label = houses[i].label,
                     coords = vector3(coords.x, coords.y, coords.z),
