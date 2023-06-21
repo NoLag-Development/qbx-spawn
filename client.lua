@@ -51,19 +51,17 @@ RegisterNetEvent('qb-spawn:client:openUI', function(value)
     setDisplay(value)
 end)
 
-RegisterNetEvent('qb-houses:client:setHouseConfig', function(houseConfig)
-    Houses = houseConfig
-end)
-
 RegisterNetEvent('qb-spawn:client:setupSpawns', function(cData, new, apps)
     if not new then
         local houses = lib.callback.await('qb-spawn:server:getOwnedHouses', false, cData.citizenid)
-        local myHouses = {}
+        Houses = {}
         if houses then
             for i = 1, #houses do
-                myHouses[#myHouses+1] = {
-                    house = houses[i].house,
-                    label = Houses[houses[i].house].adress,
+                local coords = json.decode(houses[i].camCoords)
+                Houses[houses[i].id] = {
+                    house = houses[i].id,
+                    label = houses[i].label,
+                    coords = vector3(coords.x, coords.y, coords.z),
                 }
             end
         end
@@ -72,7 +70,7 @@ RegisterNetEvent('qb-spawn:client:setupSpawns', function(cData, new, apps)
         SendNUIMessage({
             action = "setupLocations",
             locations = QB.Spawns,
-            houses = myHouses,
+            houses = Houses,
             isNew = new
         })
     elseif new then
@@ -124,7 +122,7 @@ RegisterNUICallback('setCam', function(data, cb)
             SetCam(PlayerData.position)
         end)
     elseif type == "house" then
-        SetCam(Houses[location].coords.enter)
+        SetCam(Houses[location].coords)
     elseif type == "normal" then
         SetCam(QB.Spawns[location].coords)
     elseif type == "appartment" then
@@ -176,6 +174,7 @@ RegisterNUICallback('spawnplayer', function(data, cb)
     local ped = PlayerPedId()
     local PlayerData = QBCore.Functions.GetPlayerData()
     local insideMeta = PlayerData.metadata["inside"]
+    local insideProperty = PlayerData.metadata.insideProperty
     if type == "current" then
         PreSpawnPlayer()
         QBCore.Functions.GetPlayerData(function(pd)
@@ -185,9 +184,9 @@ RegisterNUICallback('spawnplayer', function(data, cb)
             FreezeEntityPosition(ped, false)
         end)
 
-        if insideMeta.house ~= nil then
-            local houseId = insideMeta.house
-            TriggerEvent('qb-houses:client:LastLocationHouse', houseId)
+        if insideProperty then
+            local houseId = insideProperty
+            TriggerEvent('nolag_properties:client:spawnAtProperty', houseId)
         elseif insideMeta.apartment.apartmentType ~= nil or insideMeta.apartment.apartmentId ~= nil then
             local apartmentType = insideMeta.apartment.apartmentType
             local apartmentId = insideMeta.apartment.apartmentId
@@ -198,11 +197,9 @@ RegisterNUICallback('spawnplayer', function(data, cb)
         PostSpawnPlayer()
     elseif type == "house" then
         PreSpawnPlayer()
-        TriggerEvent('qb-houses:client:enterOwnedHouse', location)
+        TriggerEvent('nolag_properties:client:spawnAtProperty', location)
         TriggerServerEvent('QBCore:Server:OnPlayerLoaded')
         TriggerEvent('QBCore:Client:OnPlayerLoaded')
-        TriggerServerEvent('qb-houses:server:SetInsideMeta', 0, false)
-        TriggerServerEvent('qb-apartments:server:SetInsideMeta', 0, 0, false)
         PostSpawnPlayer()
     elseif type == "normal" then
         local pos = QB.Spawns[location].coords
